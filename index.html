@@ -596,8 +596,7 @@ color:#FFD700;
 text-shadow:0 0 6px rgba(255,215,0,.8);
 }
 section[data-step="4"] .final-card p{
-color:#E6B85C; /* normal paragraph gold */
-color:#FFD36B; /* solid gold so all lines equally bright */
+color:#FFD36B;
 font-family:'Great Vibes', cursive;
 font-size:1.22rem;
 line-height:2.25;
@@ -618,28 +617,28 @@ section[data-step="4"] .final-card p::first-letter{
 font-size:1.5em;
 font-weight:700;
 margin-right:2px;
-background:linear-gradient(180deg,#FFE7A3 0%,#FFD36B 45%,#E6A84A 100%);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+color:#FFD36B;
+-webkit-text-fill-color:#FFD36B;
 text-shadow:
 0 2px 10px rgba(0,0,0,.45),
 0 0 10px rgba(255,215,120,.35);
 }
+  
 section[data-step="4"] .signature{
-margin-top:28px; /* more breathing space */
+margin-top:28px;
 margin-bottom:10px;
 font-weight:700;
-background:linear-gradient(180deg,#FFE7A3 0%,#FFD36B 45%,#E6A84A 100%);
+background:linear-gradient(
+  180deg,
+  #FFE7A3 0%,
+  #FFD36B 45%,
+  #E6A84A 100%
+);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 font-family:'Dancing Script', cursive;
 font-size:1.45rem;
-letter-spacing:.05em;
-text-align:center; /* centered signature */
-text-shadow:
-0 2px 12px rgba(0,0,0,.45),
-0 0 12px rgba(255,215,120,.40),
-0 0 22px rgba(255,200,90,.28); /* elegant gold glow */
+text-align:center;
 }
 
 /* Make emojis visible inside gold text */
