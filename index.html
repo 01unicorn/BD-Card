@@ -238,7 +238,7 @@ display:inline-flex;
 align-items:center;
 gap:8px;
 padding:12px 18px;
-border-radius:20px 20px 20px 8px;
+border-radius:20px;
 background:linear-gradient(180deg,rgba(255,244,214,.96),rgba(255,221,170,.92));
 color:#5a2208;
 font-weight:800;
@@ -251,18 +251,6 @@ animation:awwPop .45s ease forwards;
 position:relative;
 }
 
-.aww-bubble::after{
-content:'';
-position:absolute;
-left:18px;
-bottom:-10px;
-width:16px;
-height:16px;
-background:linear-gradient(180deg,rgba(255,244,214,.96),rgba(255,221,170,.92));
-border-right:1px solid rgba(189,101,54,.25);
-border-bottom:1px solid rgba(189,101,54,.25);
-transform:rotate(45deg);
-}
 
 @keyframes awwPop{
 0%{opacity:0;transform:translateY(12px) scale(.86)}
@@ -424,7 +412,7 @@ box-shadow:0 2px 8px rgba(0,0,0,.18);
 .decor5{bottom:94px;right:94px;}
 .number-topper{
 position:absolute;
-bottom:175px;
+bottom:183px;
 left:50%;
 transform:translateX(-50%);
 display:flex;
@@ -1218,9 +1206,7 @@ function blowCandle(){
   document.querySelectorAll('.mini-candle').forEach(el => el.classList.add('out'));
   document.querySelectorAll('.num-candle').forEach(el => el.classList.add('out'));
   createSmokePuff();
-  if(msg){
-    msg.innerHTML = '<span class="aww-bubble">Wish made 💫</span>';
-  }
+  
   if(micStream){
     micStream.getTracks().forEach(track => track.stop());
     micStream = null;
@@ -1242,7 +1228,7 @@ function startMusic(){
   if(musicStarted) return;
   musicStarted = true;
   document.getElementById('musicStatus').textContent = '🎵 Music on';
-  audioElement.volume = 0.6;
+  audioElement.volume = 0.4;
   audioElement.play().catch(() => {
     document.getElementById('musicStatus').textContent = '🎵 Add music.mp3';
   });
