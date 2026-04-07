@@ -11,10 +11,10 @@ html,body{
 background:
 radial-gradient(circle at 50% 35%, rgba(255,196,77,0.12) 0%, rgba(255,196,77,0.04) 18%, rgba(0,0,0,0) 38%),
 linear-gradient(180deg,#3a1d12 0%,#7a2d1e 45%,#E0483A 100%);
-overflow:hidden;
+Overflow:auto;
 display:flex;
 justify-content:center;
-align-items:center;
+align-items:flex-start;
 position:relative;
 }
 body::before,body::after{
@@ -26,9 +26,22 @@ filter:blur(2px);
 pointer-events:none;
 }
 body::before{width:420px;height:420px;left:50%;top:12%;transform:translateX(-50%);background:radial-gradient(circle, rgba(255,196,77,0.18) 0%, rgba(255,196,77,0.05) 35%, rgba(0,0,0,0) 70%);filter:blur(12px)}
-body::after{inset:0;background:radial-gradient(circle at center, rgba(0,0,0,0) 38%, rgba(0,0,0,0.52) 100%);border-radius:0;filter:none}
+body::after{
+/* ✨ Soft dim when candles blow */
+body.dim::after{
+background:
+radial-gradient(
+circle at center,
+rgba(0,0,0,0.25) 20%,
+rgba(0,0,0,0.75) 100%
+);
+transition:background 0.6s ease;
+}
+inset:0;background:radial-gradient(circle at center, rgba(0,0,0,0) 38%, rgba(0,0,0,0.52) 100%);border-radius:0;filter:none}
+
+
 .screen{
-/* Aries masculine dark romantic theme */
+/* masculine dark romantic theme */
 width:min(95vw,430px);
 height:min(95vh,860px);
 border-radius:30px;
@@ -45,7 +58,12 @@ position:absolute;
 inset:0;
 display:flex;
 flex-direction:column;
-justify-content:center;
+justify-content:flex-start;
+
+/* added */
+padding-top:70px;
+overflow-y:auto;
+
 align-items:center;
 text-align:center;
 padding:28px 20px;
@@ -289,7 +307,7 @@ border:1px solid rgba(255,220,140,.08);
 .cake-scene{
 position:relative;
 width:100%;
-height:320px;
+height:min(320px,42vh);
 margin:2px 0 4px;
 display:flex;
 align-items:flex-end;
@@ -560,19 +578,49 @@ color:#fff7fb;
 }
 .music-chip{
 position:absolute;
-top:14px;
-right:14px;
+
+/* safer top spacing (important for Samsung + iPhone) */
+top:calc(env(safe-area-inset-top,10px) + 8px);
+
+right:12px;
 z-index:20;
-background:linear-gradient(180deg,rgba(255,236,190,.14),rgba(160,120,35,.18));
+
+background:linear-gradient(
+180deg,
+rgba(255,236,190,.14),
+rgba(160,120,35,.18)
+);
+
 backdrop-filter:blur(8px);
 border-radius:999px;
-padding:10px 14px;
-font-size:.88rem;
+
+/* 🔽 smaller padding */
+padding:6px 10px;
+
+/* 🔽 slightly smaller text */
+font-size:.78rem;
+
 font-weight:700;
 color:#f5dfb5;
-box-shadow:0 10px 24px rgba(0,0,0,.28);
+
+/* 🔽 softer shadow */
+box-shadow:0 6px 16px rgba(0,0,0,.24);
+
 border:1px solid rgba(255,220,140,.12);
+
+/* 🔽 shrink slightly */
+transform:scale(.88);
 }
+
+@media (max-width:420px){
+
+.music-chip{
+transform:scale(.8);
+right:10px;
+}
+
+}
+
 .final-card h2{
 margin:0;
 font-size:2rem;
@@ -728,7 +776,7 @@ text-shadow:
         <button onclick="checkPassword()">Unlock 💌</button>
       </div>
       <div class="error" id="passwordError"></div>
-      <div class="password-hint">Hint: what's my BD? DDMMYY 💖</div>
+      <div class="password-hint">Hint: What's my BD? DDMMYY 💖</div>
     </div>
   </section>
 
@@ -861,7 +909,7 @@ function checkPassword(){
   const error = document.getElementById('passwordError');
   if(!input || !error) return;
   if(input.value.trim().toLowerCase() === SECRET_PASSWORD.toLowerCase()){
-    error.textContent = 'Unlocked 💖';
+    error.textContent = '';
     setTimeout(() => goToStep(0), 350);
   } else {
     error.textContent = 'Not quite… try again, birthday boy 🥺';
@@ -1116,6 +1164,42 @@ function openGiftAnimation(){
   },900);
 }
 
+function playBlowSound(){
+  try{
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const noiseBuffer = audioCtx.createBuffer(
+      1,
+      audioCtx.sampleRate * 0.6,
+      audioCtx.sampleRate
+    );
+
+    const output = noiseBuffer.getChannelData(0);
+
+    for(let i = 0; i < output.length; i++){
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    const whiteNoise = audioCtx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioCtx.currentTime + 0.5
+    );
+
+    whiteNoise.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    whiteNoise.start();
+
+  }catch(e){
+    console.log("Blow sound error", e);
+  }
+}
+
 let micStream = null;
 let micAudioContext = null;
 let micAnalyser = null;
@@ -1185,6 +1269,7 @@ function createSmokePuff(){
 }
 
 function resetCakeScene(){
+  document.body.classList.remove('dim');
   flameOut = false;
   const flame = document.getElementById('candleFlame');
   const msg = document.getElementById('wishMsg');
@@ -1199,6 +1284,8 @@ function resetCakeScene(){
 function blowCandle(){
   if(flameOut) return;
   flameOut = true;
+  playBlowSound();
+  document.body.classList.add('dim');
   const flame = document.getElementById('candleFlame');
   const msg = document.getElementById('wishMsg');
   if(flame) flame.classList.add('out');
